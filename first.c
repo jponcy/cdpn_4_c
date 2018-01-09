@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 void empty_stream(FILE* stream) {
     char buffer[100];
@@ -34,7 +35,7 @@ void tp_io() {
     int choice;
     char letter;
     int limit = 0;
-    
+
     printf("Saisir votre nom : ");
     scanf(" %30s", name);
 
@@ -98,32 +99,30 @@ typedef struct employee {
  * - void print_employees(const employee* employees)
  */
 
-employee* add_item(employee** employees, employee blue) {
+employee* add_item(employee** employees, employee* blue) {
     employee* elt = *employees;
 
     if (*employees == NULL) {
-        *employees = &blue;
+        *employees = blue;
     } else {
-        while (elt->next != NULL) 
+        while (elt->next != NULL)
         { elt = elt->next; }
 
-        elt->next = &blue;
-        // elt->next = NULL;
-        // (elt->next)->next = NULL;
+        elt->next = blue;
     }
 
     return *employees;
 }
 
-employee create_employee(char* lastname, char* firstname, short age) { 
-    employee e;
+employee* create_employee(char* lastname, char* firstname, short age) {
+    employee* e = (employee*) malloc(sizeof(employee));
 
-    e.lastname = lastname;
-    e.firstname = firstname;
-    e.age = age;
-    e.next = NULL;
+    e->lastname = lastname;
+    e->firstname = firstname;
+    e->age = age;
+    e->next = NULL;
 
-    return e; 
+    return e;
 }
 
 employee* create_add_employee(employee** employees, char* lastname, char* firstname, short age) {
@@ -145,10 +144,12 @@ void print_employee(const employee* e) {
 }
 
 void print_employees(const employee* employees) {
-    const employee* elt = employees;
+    employee* elt = employees;
 
     while (elt != NULL) {
+        printf("\t- ");
         print_employee(elt);
+        printf("\n");
         elt = elt->next;
     }
 }
@@ -162,6 +163,8 @@ int count(employee* employees) {
         i++;
     }
 
+    // for (employee* elt = employees; elt != NULL; elt = elt->next, i++);
+
     return i;
 }
 
@@ -170,30 +173,13 @@ int main() {
 
     create_add_employee(&root, "Mit", "Francois", 98);
     create_add_employee(&root, "R", "Gautier", 25);
-    // root = create_add_employee(&root, "Pasr", "Gwenole", 25);
+    root = create_add_employee(&root, "Pasr", "Gwenole", 25);
 
-    // printf("Second employee was: ");
-    // print_employee(get_employee(&root, 1));
+    printf("Second employee was: ");
+    print_employee(get_employee(root, 1));
 
-    { // Separatly.
-        // employee buf = create_employee("last", "first", 0);
-        // employee* e = &buf;
-        // root = add_item(&root, buf);
-
-        // printf("Coucou : %s\n", (e == NULL ? "null..." : e->lastname));
-    }
-
-
-
-    printf("\n%d elements\n", count(root));
-
-    { // Get.
-        employee* e = get_employee(root, 0);
-        printf("Coucou : %s\n", (e == NULL ? "null..." : e->lastname));
-    }
-
-    // printf("\n\n----------------\n\nEmployees:\n");
-    // print_employees(root);
+    printf("\n\n----------------\n\nEmployees:\n");
+    print_employees(root);
 
     return 0;
 }
